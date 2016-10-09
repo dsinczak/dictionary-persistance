@@ -1,4 +1,4 @@
-package org.dsinczak.domain.dict;
+package org.dsinczak.publishedlanguage.dict;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 @Repository

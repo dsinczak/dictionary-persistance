@@ -1,21 +1,23 @@
-package org.dsinczak.domain.vo;
+package org.dsinczak.transaction.domain.vo;
+
+import com.google.common.base.Preconditions;
+import org.dsinczak.publishedlanguage.Currency;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 
-/**
- * Created by ceds6578 on 2016-09-28.
- */
-public class AmountAndCurrency {
+
+public class Money {
 
     private BigDecimal amount;
     private Currency currency;
 
-    public AmountAndCurrency() {
+    public Money() {
     }
 
-    public AmountAndCurrency(BigDecimal amount, Currency currency) {
-        this.amount = amount;
+    public Money(BigDecimal amount, Currency currency) {
+        Preconditions.checkNotNull(amount, "No money without amount");
+        Preconditions.checkNotNull(currency,"No money without currency");
+        this.amount = amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
         this.currency = currency;
     }
 
@@ -32,7 +34,7 @@ public class AmountAndCurrency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AmountAndCurrency that = (AmountAndCurrency) o;
+        Money that = (Money) o;
 
         if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
         return currency != null ? currency.equals(that.currency) : that.currency == null;
@@ -48,7 +50,7 @@ public class AmountAndCurrency {
 
     @Override
     public String toString() {
-        return "AmountAndCurrency{" +
+        return "Money{" +
                 "amount=" + amount +
                 ", currency=" + currency +
                 '}';

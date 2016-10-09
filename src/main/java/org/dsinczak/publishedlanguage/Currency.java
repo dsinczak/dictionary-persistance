@@ -1,6 +1,6 @@
-package org.dsinczak.domain;
+package org.dsinczak.publishedlanguage;
 
-import org.dsinczak.domain.dict.Dictionary;
+import org.dsinczak.publishedlanguage.dict.Dictionary;
 
 import javax.persistence.Entity;
 
@@ -28,5 +28,21 @@ public class Currency extends Dictionary {
                 ", code='" + getCode() + '\'' +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Currency)) return false;
+
+        Currency currency = (Currency) o;
+
+        return getCode() != null ? getCode().equals(currency.getCode()) : currency.getCode() == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return getCode() != null ? getCode().hashCode() : 0;
     }
 }

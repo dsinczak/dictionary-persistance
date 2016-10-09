@@ -1,14 +1,25 @@
-package org.dsinczak.domain;
+package org.dsinczak.transaction.domain;
+
+import com.google.common.base.Preconditions;
+import org.dsinczak.publishedlanguage.Currency;
+import org.dsinczak.transaction.domain.vo.Money;
+import org.dsinczak.transaction.domain.vo.MoneyType;
+import org.dsinczak.transaction.domain.vo.TransactionType;
+import org.hibernate.annotations.Columns;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
+@TypeDefs(@TypeDef(name = "moneyTypeClass",typeClass = MoneyType.class))
 public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "fk_transaction_participant_id_credit")
@@ -18,28 +29,35 @@ public class Transaction {
     @JoinColumn(name = "fk_transaction_participant_id_debit")
     private TransactionParticipant debit;
 
-    private BigDecimal amount;
+    @Type(type = "moneyTypeClass")
+    @Columns(columns = {
+            @Column(name = "amount"),
+            @Column(name = "fk_currency_id")
+    })
+    private Money money;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "fk_currency_id")
-    private Currency currency;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "fk_transaction_type_id")
     private TransactionType transactionType;
 
     public Transaction() {
     }
 
-    public Transaction(TransactionParticipant credit, TransactionParticipant debit, BigDecimal amount, Currency currency, TransactionType transactionType) {
+    public Transaction(TransactionParticipant credit, TransactionParticipant debit,
+                       BigDecimal amount, Currency currency, TransactionType transactionType) {
+        this(credit,debit,new Money(amount,currency),transactionType);
+    }
+
+    public Transaction(TransactionParticipant credit, TransactionParticipant debit, Money money, TransactionType transactionType) {
+        Preconditions.checkNotNull(credit, "Credit participant cannot be null");
+        Preconditions.checkNotNull(debit, "Debit participant cannot be null");
         this.credit = credit;
         this.debit = debit;
-        this.amount = amount;
-        this.currency = currency;
+        this.money = money;
         this.transactionType = transactionType;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -52,11 +70,15 @@ public class Transaction {
     }
 
     public BigDecimal getAmount() {
-        return amount;
+        return money.getAmount();
     }
 
     public Currency getCurrency() {
-        return currency;
+        return money.getCurrency();
+    }
+
+    public Money getMoney() {
+        return money;
     }
 
     public TransactionType getTransactionType() {
@@ -85,8 +107,7 @@ public class Transaction {
                 "id=" + id +
                 ", credit=" + credit +
                 ", debit=" + debit +
-                ", amount=" + amount +
-                ", currency=" + currency +
+                ", money=" + money +
                 ", transactionType=" + transactionType +
                 '}';
     }

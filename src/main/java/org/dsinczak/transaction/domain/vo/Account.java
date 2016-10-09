@@ -1,4 +1,4 @@
-package org.dsinczak.domain.vo;
+package org.dsinczak.transaction.domain.vo;
 
 import javax.persistence.Embeddable;
 
